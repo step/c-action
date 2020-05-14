@@ -30,6 +30,12 @@ jobs:
         ref: ${{ github.event.client_payload.body.after }}
         token: ${{secrets.GIT_HUB_TOKEN}}
 
+    - uses: actions/checkout@v2
+    - name: clone the action repo
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
     - run: make ci
       env:
         CI: true
@@ -37,6 +43,7 @@ jobs:
     - run: make report
       env:
         META_EVENT: ${{  toJson(github.event.client_payload.body.head_commit) }}
+        TEST_REPO_NAME: ${{ github.event.client_payload.test_repo_name }}
     - name: Read report
       id : package
       uses: juliangruber/read-file-action@v1
