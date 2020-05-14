@@ -13,6 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: clone the action repo
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}  
+    - uses: actions/checkout@v2
       with:
         repository: ${{ github.event.client_payload.test_repo_name }}
         token: ${{secrets.GIT_HUB_TOKEN}}
@@ -29,12 +34,6 @@ jobs:
         path: __source
         ref: ${{ github.event.client_payload.body.after }}
         token: ${{secrets.GIT_HUB_TOKEN}}
-
-    - uses: actions/checkout@v2
-    - name: clone the action repo
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
 
     - run: make ci
       env:
