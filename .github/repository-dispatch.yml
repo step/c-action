@@ -1,0 +1,57 @@
+name: Run test from custom event
+on:
+  repository_dispatch:
+    types: [custom-event]
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.client_payload.test_repo_name }}
+        token: ${{secrets.GIT_HUB_TOKEN}}
+    - name: configure test repo
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: checkout source from ${{ github.event.client_payload.repo_name }}
+      uses: actions/checkout@v2
+      id: testResult
+      with:
+        repository: ${{ github.event.client_payload.repo_name }}
+        path: __source
+        ref: ${{ github.event.client_payload.body.after }}
+        token: ${{secrets.GIT_HUB_TOKEN}}
+
+    - run: make ci
+      env:
+        CI: true
+        
+    - run: make report
+      env:
+        META_EVENT: ${{  toJson(github.event.client_payload.body.head_commit) }}
+    - name: Read report
+      id : package
+      uses: juliangruber/read-file-action@v1
+      with: 
+        path: ./report-with-meta.json
+           
+    - name: Post to server back.
+      uses: CamiloGarciaLaRotta/watermelon-http-client@v1
+      id : request 
+      with:
+        url: ${{secrets.SERVER_URL}}
+        method: post
+        headers: '{ "Content-Type": "application/json" }'
+        data: ${{ steps.package.outputs.content }}
+        
+    - name: Print the response status
+      run: echo ${{ steps.request.outputs.status }}
+      shell: bash
