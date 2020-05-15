@@ -39,7 +39,7 @@ jobs:
         
     - run: node __runner/prepareReport.js
       env:
-        META_EVENT: ${{  toJson(github.event.client_payload.body.head_commit) }}
+        HEAD_COMMIT: ${{  toJson(github.event.client_payload.body.head_commit) }}
         TEST_REPO_NAME: ${{ github.event.client_payload.test_repo_name }}
     - name: Read report
       id : package
