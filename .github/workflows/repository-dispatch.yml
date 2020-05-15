@@ -12,22 +12,15 @@ jobs:
         node-version: [10.x]
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout action repo
+      uses: actions/checkout@v2
       with:
-        path: __runner
-    - name: clone the action repo
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}  
-    - uses: actions/checkout@v2
+        path: __runner  
+    - name: Checkout test repo  
+      uses: actions/checkout@v2
       with:
         repository: ${{ github.event.client_payload.test_repo_name }}
         token: ${{secrets.GIT_HUB_TOKEN}}
-    - name: configure test repo
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-
     - name: checkout source from ${{ github.event.client_payload.repo_name }}
       uses: actions/checkout@v2
       id: testResult
@@ -36,6 +29,10 @@ jobs:
         path: __source
         ref: ${{ github.event.client_payload.body.after }}
         token: ${{secrets.GIT_HUB_TOKEN}}
+    - name: configure node 
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
 
     - run: make ci
       env:
