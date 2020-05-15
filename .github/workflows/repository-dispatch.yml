@@ -12,18 +12,17 @@ jobs:
         node-version: [10.x]
 
     steps:
-    - name: Checkout action repo
-      uses: actions/checkout@v2
-      with:
-        path: __runner  
     - name: Checkout test repo  
       uses: actions/checkout@v2
       with:
         repository: ${{ github.event.client_payload.test_repo_name }}
         token: ${{secrets.GIT_HUB_TOKEN}}
+    - name: Checkout action repo
+      uses: actions/checkout@v2
+      with:
+        path: __runner  
     - name: checkout source from ${{ github.event.client_payload.repo_name }}
       uses: actions/checkout@v2
-      id: testResult
       with:
         repository: ${{ github.event.client_payload.repo_name }}
         path: __source
