@@ -1,5 +1,5 @@
 const fs = require('fs');
-const report = require('./report.json');
+const report = require('../report.json');
 
 const META_EVENT = process.env.META_EVENT;
 const TEST_REPO_NAME = process.env.TEST_REPO_NAME;
